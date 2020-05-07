@@ -7,18 +7,18 @@
 		"noLib": false,
 		"emitDecoratorMetadata": true,
 		"experimentalDecorators": true,
-		"target": "es2017",
+		"target": "es2018",
 		"sourceMap": true,
-		"allowJs": true,
+		"allowJs": false,
 		"outDir": "./dist",
 		"resolveJsonModule": true,
-    "esModuleInterop": true
+		"esModuleInterop": true
 	},
 	"include": [
-    "lib/**/*.ts",
-    "test/**/*.ts"
+		"lib/**/*.ts",
+		"test/**/*.ts"
 	],
 	"exclude": [
-		"**/*.spec.ts"
+		"node_modules"
 	]
 }

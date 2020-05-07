@@ -1,10 +1,13 @@
+import "reflect-metadata";
+
 export enum MODE {
 	Singleton = 0,
 	Ordinary,
 	Lazy
 }
 
-const Container = new Map();
+export const Singleton_Container = new Map();
+export const Lazy_Container = new Map();
 
 /**
  * Inject a class instance
@@ -26,22 +29,26 @@ export function Autowired(options: { mode: MODE; arguments?: any[] } = { mode: M
 		const { mode } = options;
 		const typeClass = Reflect.getMetadata("design:type", target, propertyKey);
 		const originDescriptor = Reflect.getOwnPropertyDescriptor((target && target.prototype) || target, propertyKey);
-		const descriptor = originDescriptor || { writable: true, configurable: true };
+		const descriptor = originDescriptor || { configurable: true };
 		if (mode == MODE.Singleton) {
-			if (!Container.has(typeClass)) {
-				Container.set(typeClass, new typeClass());
+			if (!Singleton_Container.has(typeClass)) {
+				Singleton_Container.set(typeClass, new typeClass());
 			}
-			descriptor.value = Container.get(typeClass);
-		} else if (mode == MODE.Lazy) {
 			descriptor.get = () => {
-				if (!Container.has(typeClass)) {
-					Container.set(typeClass, new typeClass());
-				}
-				return Container.get(typeClass);
+				return Singleton_Container.get(typeClass);
 			}
-		} else {
+		}
+		else if (mode == MODE.Lazy) {
+			descriptor.get = () => {
+				if (!Lazy_Container.has(typeClass)) {
+					Lazy_Container.set(typeClass, new typeClass());
+				}
+				return Lazy_Container.get(typeClass);
+			}
+		}
+		else {
 			descriptor.value = new typeClass(...options.arguments);
 		}
-		Reflect.defineProperty((target && target.prototype) || target, propertyKey, descriptor);
+		return descriptor;
 	};
 }

@@ -22,7 +22,7 @@ export function Before(func: Function) {
 		const method = descriptor.value;
 		if (method.constructor.name === "AsyncFunction") {
 			descriptor.value = async function () {
-				func(...arguments);
+				await func(...arguments);
 				return await method.apply(this, arguments);
 			};
 		} else {
@@ -59,7 +59,7 @@ export function After(func: Function) {
 		if (method.constructor.name === "AsyncFunction") {
 			descriptor.value = async function () {
 				const result = await method.apply(this, arguments);
-				func(...arguments);
+				await func(...arguments);
 				return result;
 			};
 		} else {
@@ -134,13 +134,25 @@ export function Around(func: Function) {
 export function Catch(func: Function) {
 	return function (target: any, key: string, descriptor: PropertyDescriptor) {
 		const method = descriptor.value;
-		descriptor.value = async function () {
-			try {
-				const result = await method.apply(this, arguments);
-				return result;
-			} catch (e) {
-				return func(e);
-			}
-		};
+		if (method.constructor.name === "AsyncFunction") {
+			descriptor.value = async function () {
+				try {
+					const result = await method.apply(this, arguments);
+					return result;
+				} catch (e) {
+					return func(e);
+				}
+			};
+		} else {
+			descriptor.value = function () {
+				try {
+					const result = method.apply(this, arguments);
+					return result;
+				} catch (e) {
+					return func(e);
+				}
+			};
+		}
+
 	};
 }

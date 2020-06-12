@@ -32,7 +32,7 @@ export function Autowired(options: { mode: MODE; arguments?: any[] } = { mode: M
 		const descriptor = originDescriptor || { configurable: true };
 		if (mode == MODE.Singleton) {
 			if (!Singleton_Container.has(typeClass)) {
-				Singleton_Container.set(typeClass, new typeClass());
+				Singleton_Container.set(typeClass, new typeClass(...options.arguments));
 			}
 			descriptor.get = () => {
 				return Singleton_Container.get(typeClass);
@@ -41,7 +41,7 @@ export function Autowired(options: { mode: MODE; arguments?: any[] } = { mode: M
 		else if (mode == MODE.Lazy) {
 			descriptor.get = () => {
 				if (!Lazy_Container.has(typeClass)) {
-					Lazy_Container.set(typeClass, new typeClass());
+					Lazy_Container.set(typeClass, new typeClass(...options.arguments));
 				}
 				return Lazy_Container.get(typeClass);
 			}

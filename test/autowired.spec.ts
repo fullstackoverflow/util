@@ -1,5 +1,5 @@
 import { Test, Expect, TestFixture, Timeout } from "alsatian";
-import { Autowired, MODE, Lazy_Container } from "../lib";
+import { Autowired, MODE, Containers } from "../lib";
 
 class T2 {
     id: number
@@ -28,9 +28,8 @@ export class AOPTest {
     @Test(`Lazy injection should work`)
     @Timeout(10000)
     public async Lazy_injection() {
-        Expect(Lazy_Container.get(T2)).toBe(undefined);
         this.T4;
-        Expect(typeof Lazy_Container.get(T2).id).toEqual("number");
+        Expect(typeof Containers.get(T2).id).toEqual("number");
     }
 }
 

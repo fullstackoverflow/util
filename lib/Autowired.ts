@@ -6,8 +6,18 @@ export enum MODE {
 	Lazy
 }
 
-export const Singleton_Container = new Map();
-export const Lazy_Container = new Map();
+const containers = new Map();
+
+export const Containers = {
+	get(func: any, ...args: any) {
+		let instance = containers.get(func);
+		if (!instance) {
+			instance = new func(...args);
+			containers.set(func, instance);
+		}
+		return instance;
+	}
+}
 
 /**
  * Inject a class instance
@@ -31,19 +41,19 @@ export function Autowired(options: { mode: MODE; arguments?: any[] } = { mode: M
 		const originDescriptor = Reflect.getOwnPropertyDescriptor((target && target.prototype) || target, propertyKey);
 		const descriptor = originDescriptor || { configurable: true };
 		if (mode == MODE.Singleton) {
-			if (!Singleton_Container.has(typeClass)) {
-				Singleton_Container.set(typeClass, new typeClass(...options.arguments));
+			if (!containers.has(typeClass)) {
+				containers.set(typeClass, new typeClass(...options.arguments));
 			}
 			descriptor.get = () => {
-				return Singleton_Container.get(typeClass);
+				return containers.get(typeClass);
 			}
 		}
 		else if (mode == MODE.Lazy) {
 			descriptor.get = () => {
-				if (!Lazy_Container.has(typeClass)) {
-					Lazy_Container.set(typeClass, new typeClass(...options.arguments));
+				if (!containers.has(typeClass)) {
+					containers.set(typeClass, new typeClass(...options.arguments));
 				}
-				return Lazy_Container.get(typeClass);
+				return containers.get(typeClass);
 			}
 		}
 		else {

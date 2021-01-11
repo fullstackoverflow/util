@@ -9,7 +9,7 @@ export enum MODE {
 const containers = new Map();
 
 export const Containers = {
-	get(func: any, ...args: any) {
+	get<T>(func: { new(...args: any): T }, ...args: any): T {
 		let instance = containers.get(func);
 		if (!instance) {
 			instance = new func(...args);

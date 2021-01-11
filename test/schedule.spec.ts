@@ -22,7 +22,7 @@ export class ScheduleTest {
     async sleep(num: number) {
         return new Promise(resolve => {
             setTimeout(() => {
-                resolve();
+                resolve(1);
             }, num);
         })
     }

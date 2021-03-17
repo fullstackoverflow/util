@@ -16,12 +16,21 @@ export class AOPTest {
     @Autowired()
     T3: T2
 
+    @Autowired({ mode: MODE.Singleton })
+    T5: T2
+
     @Autowired({ mode: MODE.Lazy })
     T4: T2
 
     @Test(`Singleton injection should work`)
     @Timeout(10000)
     public async Default_injection() {
+        Expect(this.T2.id).toBe(this.T3.id);
+    }
+
+    @Test(`Singleton adapter old usage`)
+    @Timeout(10000)
+    public async OldUsage() {
         Expect(this.T2.id).toBe(this.T3.id);
     }
 

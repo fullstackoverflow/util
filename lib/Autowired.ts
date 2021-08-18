@@ -64,10 +64,13 @@ export function Autowired(options: { mode: MODE; arguments?: any[] } = { mode: M
 				break;
 			case MODE.Request:
 				descriptor.get = () => {
-					if (!RequestContext.getInstance().context.has(typeClass)) {
-						RequestContext.getInstance().context.set(typeClass, new typeClass(...(options.arguments ?? [])));
+					const instance = RequestContext.getInstance();
+					const ctx = instance.context;
+					const store = instance.ContextCache.get(ctx);
+					if (!store.has(typeClass)) {
+						store.set(typeClass, new typeClass(ctx));
 					}
-					return RequestContext.getInstance().context.get(typeClass);
+					return store.get(typeClass);
 				}
 				break;
 		}

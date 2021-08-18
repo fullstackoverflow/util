@@ -2,12 +2,15 @@ import asyncHooks from "async_hooks";
 import { Context } from "koa";
 
 export class RequestContext {
-    ContextManager: Map<number, WeakMap<Context, Map<Function, any>>>;
+    ContextManager: Map<number, Context>;
+
+    ContextCache: WeakMap<Context, Map<Function, any>>;
 
     private static instance: RequestContext
 
     private constructor() {
         this.ContextManager = new Map();
+        this.ContextCache = new WeakMap();
         this.createHooks(this);
     }
 
@@ -20,14 +23,16 @@ export class RequestContext {
 
     init(ctx: Context) {
         const eid = asyncHooks.executionAsyncId();
-        const weakmap = new WeakMap();
-        weakmap.set(ctx, new Map());
-        this.ContextManager.set(eid, weakmap);
+        this.ContextManager.set(eid, ctx);
+        if (!this.ContextCache.has(ctx)) {
+            this.ContextCache.set(ctx, new Map());
+        }
     }
 
     get context() {
         const eid = asyncHooks.executionAsyncId();
-        return this.ContextManager.get(eid);
+        const ctx = this.ContextManager.get(eid);
+        return ctx;
     }
 
     private createHooks(context: RequestContext) {

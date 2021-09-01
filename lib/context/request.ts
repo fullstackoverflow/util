@@ -1,10 +1,8 @@
 import asyncHooks from "async_hooks";
-import { Context } from "koa";
+export class RequestContext<T extends Object = Object> {
+    ContextManager: Map<number, T>;
 
-export class RequestContext {
-    ContextManager: Map<number, Context>;
-
-    ContextCache: WeakMap<Context, Map<Function, any>>;
+    ContextCache: WeakMap<T, Map<Function, any>>;
 
     private static instance: RequestContext
 
@@ -21,7 +19,7 @@ export class RequestContext {
         return RequestContext.instance;
     }
 
-    init(ctx: Context) {
+    init(ctx: T) {
         const eid = asyncHooks.executionAsyncId();
         this.ContextManager.set(eid, ctx);
         if (!this.ContextCache.has(ctx)) {

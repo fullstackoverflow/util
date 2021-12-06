@@ -2,7 +2,7 @@ import asyncHooks from "async_hooks";
 export class RequestContext<T extends Object = Object> {
     ContextManager: Map<number, T>;
 
-    ContextCache: WeakMap<T, Map<Function, any>>;
+    ContextCache: WeakMap<T, Map<any, any>>;
 
     private static instance: RequestContext
 
